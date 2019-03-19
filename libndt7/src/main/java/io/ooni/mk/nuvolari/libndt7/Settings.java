@@ -6,4 +6,15 @@ public class Settings {
     public int port = 0;
     public boolean skipTLSVerify = false;  // TODO(bassosimone): implement
     public DownloadSettings download = new DownloadSettings();
+
+    @Override
+    public String toString() {
+        return "Settings{" +
+                "disableTLS=" + disableTLS +
+                ", hostname='" + hostname + '\'' +
+                ", port=" + port +
+                ", skipTLSVerify=" + skipTLSVerify +
+                ", download=" + download +
+                '}';
+    }
 }
