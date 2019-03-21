@@ -1,4 +1,4 @@
-package io.ooni.mk.nuvolari.libndt7;
+package net.measurementlab.ndt.android;
 
 public class DownloadSettings {
     public boolean adaptive = false;

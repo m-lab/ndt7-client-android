@@ -2,7 +2,7 @@
 <manifest
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.ooni.mk.nuvolari.android">
+    package="net.measurementlab.ndt.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity android:name=".MainActivity">
             <intent-filter>

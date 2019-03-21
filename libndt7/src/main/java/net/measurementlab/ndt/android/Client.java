@@ -1,4 +1,4 @@
-package io.ooni.mk.nuvolari.libndt7;
+package net.measurementlab.ndt.android;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
@@ -78,8 +78,6 @@ public class Client extends WebSocketListener {
         count += text.length();
         periodic();
 
-        Measurement measurement = new Measurement();
-
         @NonNull
         final JSONObject doc;
 
@@ -91,37 +89,51 @@ public class Client extends WebSocketListener {
             return;
         }
 
+        final double elapsed;
+
         // Top level
         try {
-            measurement.elapsed = doc.getDouble("elapsed");
-        } catch (JSONException e) { }
+            elapsed = doc.getDouble("elapsed");
+        } catch (JSONException e) {
+            Log.e(TAG, "did not find valid elapsed time", e);
+            return;
+        }
+
+        @Nullable
+        Measurement.TcpInfo tcpInfo = null;
 
         // tcp_info
         try {
             JSONObject tcpInfoObject = doc.getJSONObject("tcp_info");
-            measurement.tcpInfo = new Measurement.TcpInfo();
-            measurement.tcpInfo.smoothedRtt = tcpInfoObject.getDouble("smoothed_rtt");
-            measurement.tcpInfo.rttVar = tcpInfoObject.getDouble("rtt_var");
+
+            double smoothedRtt = tcpInfoObject.getDouble("smoothed_rtt");
+            double rttVar = tcpInfoObject.getDouble("rtt_var");
+            tcpInfo = new Measurement.TcpInfo(smoothedRtt, rttVar);
         } catch (JSONException e) {
-            Log.d(TAG, "did not find tcp_info", e);
-            return;
+            Log.d(TAG, "did not find valid tcp_info", e);
         }
+
+        @Nullable
+        Measurement.BBRInfo bbrInfo = null;
 
         // bbr_info
         try {
             JSONObject bbrInfoObject = doc.getJSONObject("bbr_info");
-            measurement.bbrInfo = new Measurement.BBRInfo();
-            measurement.bbrInfo.bandwidth = bbrInfoObject.getLong("max_bandwidth");
-            measurement.bbrInfo.minRtt = bbrInfoObject.getDouble("min_rtt");
+            long bandwidth = bbrInfoObject.getLong("max_bandwidth");
+            double minRtt = bbrInfoObject.getDouble("min_rtt");
+            bbrInfo = new Measurement.BBRInfo(bandwidth, minRtt);
         } catch (JSONException e) { }
+
+        @Nullable
+        Measurement.AppInfo appInfo = null;
 
         // app_info
         try {
-            JSONObject appInfo = doc.getJSONObject("app_info");
-            measurement.appInfo = new Measurement.AppInfo();
-            measurement.appInfo.numBytes = appInfo.getLong("num_bytes");
+            JSONObject appInfoObject = doc.getJSONObject("app_info");
+            appInfo = new Measurement.AppInfo(appInfoObject.getLong("num_bytes"));
         } catch (JSONException e) { }
 
+        Measurement measurement = new Measurement(elapsed, tcpInfo, bbrInfo, appInfo);
         onServerDownloadMeasurement(measurement);
     }
 
@@ -159,7 +171,7 @@ public class Client extends WebSocketListener {
                 settings.hostname,
                 (settings.port >= 0 && settings.port < 65536) ? settings.port : -1,
                 "/ndt/v7/download",
-                makeQuery(),
+                "",
                 null
             );
         } catch (URISyntaxException e) {
@@ -229,31 +241,11 @@ public class Client extends WebSocketListener {
 
     private void periodic() {
         long now = System.nanoTime();
+
         if (now - tLast > measurementInterval) {
-            Measurement measurement = new Measurement();
-            measurement.elapsed = now - t0;
-            measurement.numBytes = count;
+            Measurement measurement = new Measurement(now - t0, null, null, null);
             tLast = now;
             onClientDownloadMeasurement(measurement);
         }
-    }
-
-    private String makeQuery() {
-        String s = "";
-
-        if (settings.download.adaptive) {
-            s += "adaptive=true";
-        }
-
-        if (settings.download.duration > 0) {
-            if (!s.isEmpty()) {
-                s += "&";
-            }
-
-            s += "duration=";
-            s += Integer.toString(settings.download.duration);
-        }
-
-        return s;
     }
 }

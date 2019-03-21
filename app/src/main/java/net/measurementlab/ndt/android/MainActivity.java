@@ -1,4 +1,4 @@
-package io.ooni.mk.nuvolari.android;
+package net.measurementlab.ndt.android;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -8,10 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
-import io.ooni.mk.nuvolari.libndt7.Client;
-import io.ooni.mk.nuvolari.libndt7.Measurement;
-import io.ooni.mk.nuvolari.libndt7.Settings;
 
 public class MainActivity extends AppCompatActivity {
 

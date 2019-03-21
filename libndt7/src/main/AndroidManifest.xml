@@ -1,2 +1,1 @@
-<manifest package="io.ooni.mk.nuvolari.libndt7"
-          xmlns:android="http://schemas.android.com/apk/res/android"/>
+<manifest package="net.measurementlab.ndt.android"/>
