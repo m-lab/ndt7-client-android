@@ -1,4 +1,4 @@
-package net.measurementlab.ndt.android;
+package net.measurementlab.ndt7.android;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -22,10 +22,7 @@ public class MainActivity extends AppCompatActivity {
         Settings settings = new Settings();
         settings.hostname = "35.235.104.27";
         settings.port = 443;
-        settings.disableTLS = false;
-        settings.skipTLSVerify = true;
-        settings.download.duration = 1;
-        settings.download.adaptive = true;
+        settings.skipTlsCertificateVerification = true;
         Client client = new MyClient(settings);
 
         if (!client.runDownload()) {

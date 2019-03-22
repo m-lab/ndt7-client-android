@@ -1,4 +1,4 @@
-package net.measurementlab.ndt.android;
+package net.measurementlab.ndt7.android;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
@@ -166,7 +166,7 @@ public class Client extends WebSocketListener {
         URI uri;
         try {
             uri = new URI(
-                (settings.disableTLS) ? "ws" : "wss",
+                "wss",
                 null, // userInfo
                 settings.hostname,
                 (settings.port >= 0 && settings.port < 65536) ? settings.port : -1,
@@ -182,7 +182,7 @@ public class Client extends WebSocketListener {
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-        if (settings.skipTLSVerify) {
+        if (settings.skipTlsCertificateVerification) {
             X509TrustManager x509TrustManager = new X509TrustManager() {
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain,

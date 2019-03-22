@@ -1,4 +1,4 @@
-package net.measurementlab.ndt.android;
+package net.measurementlab.ndt7.android;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
