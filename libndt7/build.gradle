@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
@@ -27,6 +29,12 @@ android {
 }
 
 dependencies {
-    api 'com.squareup.okhttp3:okhttp:3.14.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "com.android.support:appcompat-v7:$support_library_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.google.code.gson:gson:$gson_version"
+}
+
+repositories {
+    mavenCentral()
 }
