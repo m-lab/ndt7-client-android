@@ -2,6 +2,7 @@ package net.measurementlab.ndt7.android
 
 import android.support.annotation.CheckResult
 import android.util.Log
+import com.google.gson.Gson
 
 import org.json.JSONException
 import org.json.JSONObject
@@ -28,11 +29,13 @@ private const val TAG = "Client"
 
 open class Client(private val settings: Settings) : WebSocketListener() {
 
+    private val gson = Gson()
+    private val measurementInterval = TimeUnit.NANOSECONDS.convert(250, TimeUnit.MILLISECONDS)
+
     private var count = 0.0
     private var rv = true
     private var t0: Long = 0
     private var tLast: Long = 0
-    private val measurementInterval = TimeUnit.NANOSECONDS.convert(250, TimeUnit.MILLISECONDS)
 
     open fun onLogInfo(message: String?) {
         Log.d(TAG, "onLogInfo: " + message!!)
@@ -50,7 +53,8 @@ open class Client(private val settings: Settings) : WebSocketListener() {
         Log.d(TAG, "onClientDownloadMeasurement: $measurement")
     }
 
-    override fun onOpen(ws: WebSocket?, resp: Response?) {
+    override fun onOpen(ws: WebSocket?,
+                        resp: Response?) {
         onLogInfo("WebSocket onOpen")
     }
 
@@ -60,59 +64,15 @@ open class Client(private val settings: Settings) : WebSocketListener() {
         count += text.length.toDouble()
         periodic()
 
-        val doc: JSONObject
+        val measurement: Measurement
 
-        // Root
         try {
-            doc = JSONObject(text)
-        } catch (e: JSONException) {
-            Log.d(TAG, "could not parse root json", e)
+            measurement = gson.fromJson(text, Measurement::class.java)
+        } catch (e: Exception) {
+            Log.e(TAG, "could not parse json", e)
             return
         }
 
-        val elapsed: Double
-
-        // Top level
-        try {
-            elapsed = doc.getDouble("elapsed")
-        } catch (e: JSONException) {
-            Log.e(TAG, "did not find valid elapsed time", e)
-            return
-        }
-
-        var tcpInfo: Measurement.TcpInfo? = null
-
-        // tcp_info
-        try {
-            val tcpInfoObject = doc.getJSONObject("tcp_info")
-
-            val smoothedRtt = tcpInfoObject.getDouble("smoothed_rtt")
-            val rttVar = tcpInfoObject.getDouble("rtt_var")
-            tcpInfo = Measurement.TcpInfo(smoothedRtt, rttVar)
-        } catch (e: JSONException) {
-            Log.d(TAG, "did not find valid tcp_info", e)
-        }
-
-        var bbrInfo: Measurement.BBRInfo? = null
-
-        // bbr_info
-        try {
-            val bbrInfoObject = doc.getJSONObject("bbr_info")
-            val bandwidth = bbrInfoObject.getLong("max_bandwidth")
-            val minRtt = bbrInfoObject.getDouble("min_rtt")
-            bbrInfo = Measurement.BBRInfo(bandwidth, minRtt)
-        } catch (ignored: JSONException) { }
-
-        var appInfo: Measurement.AppInfo? = null
-
-        // app_info
-        try {
-            val appInfoObject = doc.getJSONObject("app_info")
-            appInfo = Measurement.AppInfo(appInfoObject.getLong("num_bytes"))
-        } catch (e: JSONException) {
-        }
-
-        val measurement = Measurement(elapsed, tcpInfo, bbrInfo, appInfo)
         onServerDownloadMeasurement(measurement)
     }
 
