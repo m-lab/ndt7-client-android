@@ -4,9 +4,6 @@ import android.support.annotation.CheckResult
 import android.util.Log
 import com.google.gson.Gson
 
-import org.json.JSONException
-import org.json.JSONObject
-
 import java.net.URI
 import java.net.URISyntaxException
 import java.security.cert.X509Certificate
@@ -105,7 +102,7 @@ open class Client(private val settings: Settings) : WebSocketListener() {
             uri = URI(
                     "wss", null, // userInfo
                     settings.hostname,
-                    if (settings.port >= 0 && settings.port < 65536) settings.port else -1,
+                    if (settings.port in 0..65535) settings.port else -1,
                     "/ndt/v7/download",
                     "", null
             )
@@ -140,7 +137,7 @@ open class Client(private val settings: Settings) : WebSocketListener() {
                 Log.e(TAG, "Encountered exception while attempting to observe flag skipTlsCertificateVerification", e)
             }
 
-            builder.hostnameVerifier { hostname, session -> true }
+            builder.hostnameVerifier { _, _ -> true }
         }
 
         val client = builder
