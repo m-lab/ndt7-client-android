@@ -114,7 +114,7 @@ public class ClientUpload extends WebSocketListener {
             uri = new URI(
                     "wss",
                     null, // userInfo
-                    settings.getHostname(),
+                    settings.getHostname(),https://pay.google.com/payments/home?bcn=923840213279#salesTax
                     (settings.getPort() >= 0 && settings.getPort() < 65536) ? settings.getPort() : -1,
                     "/ndt/v7/upload",
                     "",
@@ -174,18 +174,7 @@ public class ClientUpload extends WebSocketListener {
 
         t0 = tLast = System.nanoTime();
         client.dispatcher().executorService().shutdown();
-
-        // Basically make the code synchronous here:
-
-        /*ExecutorService svc = client.dispatcher().executorService();
-        svc.shutdown();
-        try {
-            svc.awaitTermination(30, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            // TODO(bassosimone): how to handle this error condition?
-            Log.e(TAG, "runDownload awaitTermination encountered exception", e);
-        }*/
-
+        
         return rv;
     }
 
