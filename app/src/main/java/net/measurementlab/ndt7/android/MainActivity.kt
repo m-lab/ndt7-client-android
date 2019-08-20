@@ -7,19 +7,22 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import butterknife.BindView
 import butterknife.ButterKnife
 import java.net.URL
 import com.google.gson.Gson
 import net.measurementlab.ndt7.android.model.Server
-import java.util.*
+import java.util.Locale
 import kotlin.math.pow
 
 
 private const val TAG = "MainActivity"
-private const val LOCATESERVER = "https://locate.measurementlab.net/ndt7"
 
-class MainActivity : Activity() {
+private val LOCATESERVER = URL("https://locate.measurementlab.net/ndt7")
+
+
+class MainActivity : AppCompatActivity() {
     @BindView(R.id.server)
     lateinit var tv_server: TextView
 
@@ -50,8 +53,7 @@ class MainActivity : Activity() {
 
         ButterKnife.bind(this)
 
-        val locateUrl = URL(LOCATESERVER)
-        val ndt7ServerSearch = Ndt7ServerSearch(locateUrl)
+        val ndt7ServerSearch = Ndt7ServerSearch(LOCATESERVER)
         val rawJsonServer = Gson().fromJson(ndt7ServerSearch.server, Server::class.java)
 
 
