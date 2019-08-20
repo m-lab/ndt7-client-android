@@ -57,11 +57,11 @@ class MainActivity : AppCompatActivity() {
         val rawJsonServer = Gson().fromJson(ndt7ServerSearch.server, Server::class.java)
 
 
-        val fqdn    = rawJsonServer.fqdn.replace("\"","")
-        val country = rawJsonServer.country.replace("\"","")
-        val ipv4    = rawJsonServer.ip[0].replace("\"","")
-        val site    = rawJsonServer.site.replace("\"","")
-        val city    = rawJsonServer.city.replace("\"","")
+        val fqdn    = rawJsonServer.fqdn.toString()
+        val country = rawJsonServer.country.toString()
+        val ipv4    = rawJsonServer.ip[0].toString()
+        val site    = rawJsonServer.site.toString()
+        val city    = rawJsonServer.city.toString()
 
         Log.d(TAG, "SERVER FOUND:$fqdn")
 
