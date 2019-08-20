@@ -114,7 +114,7 @@ public class ClientUpload extends WebSocketListener {
             uri = new URI(
                     "wss",
                     null, // userInfo
-                    settings.getHostname(),https://pay.google.com/payments/home?bcn=923840213279#salesTax
+                    settings.getHostname(),
                     (settings.getPort() >= 0 && settings.getPort() < 65536) ? settings.getPort() : -1,
                     "/ndt/v7/upload",
                     "",
