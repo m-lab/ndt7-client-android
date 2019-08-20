@@ -104,9 +104,10 @@ class MainActivity : Activity() {
 
                 Thread(Runnable {
                     this@MainActivity.runOnUiThread(java.lang.Runnable {
-
-                        tv_uploadspeed.text = String.format(Locale.ENGLISH, "%.3f Mbit/s", (
-                                rate))
+                        val mb = measurement.appInfo!!.numBytes.toDouble() / 125000.0 / 10.0
+                        val upload = (10f - measurement.elapsed) * mb / (10f - measurement.elapsed)
+                        val uploadSpeedText = String.format(Locale.getDefault(), "%.2f MBit/s", upload)
+                        tv_uploadspeed.text = uploadSpeedText
 
                     })
                 }).start()
@@ -153,9 +154,12 @@ class MainActivity : Activity() {
                 this@MainActivity.runOnUiThread(java.lang.Runnable {
 
                     Log.d(TAG, ""+measurement.elapsed)
-                    if (measurement.elapsed > 0)
-                        tv_downloadspeed.text = String.format(Locale.ENGLISH, "%.3f Mbit/s",
-                                (8*measurement.appInfo!!.numBytes.toDouble() /measurement.elapsed/1000/1000))
+                    if (measurement.elapsed > 0) {
+                        val mb = measurement.appInfo!!.numBytes.toDouble() / 125000.0 / 10.0
+                        val download = (10f - measurement.elapsed) * mb / (10f - measurement.elapsed)
+                        val downloadSpeedText = String.format(Locale.getDefault(), "%.2f MBit/s", download)
+                        tv_downloadspeed.text = downloadSpeedText
+                    }
 
                 })
             }).start()

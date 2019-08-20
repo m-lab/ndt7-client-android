@@ -25,6 +25,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 
 // TODO(bassosimone): do we need locking for this class?
@@ -114,7 +115,7 @@ public class ClientUpload extends WebSocketListener {
             uri = new URI(
                     "wss",
                     null, // userInfo
-                    settings.getHostname(),https://pay.google.com/payments/home?bcn=923840213279#salesTax
+                    settings.getHostname(),
                     (settings.getPort() >= 0 && settings.getPort() < 65536) ? settings.getPort() : -1,
                     "/ndt/v7/upload",
                     "",
@@ -179,36 +180,40 @@ public class ClientUpload extends WebSocketListener {
     }
 
     //ToDo find the best compromise to upload datas
-    private void UploadData(WebSocket ws){
+    private void UploadData(WebSocket ws) {
 
-        long totalTime = (long) (ClientUpload.TEST_TIME *Math.pow(10,9));
+        long totalTime = (long) (ClientUpload.TEST_TIME * Math.pow(10, 9));
         long startTime = System.nanoTime();
         boolean toFinish = false;
-        while(!toFinish){
+        while (!toFinish) {
+            elapsed = System.nanoTime() - startTime;
             periodic();
 
-            byte[] dataChunk = new byte[1<<13];
+            byte[] dataChunk = new byte[1 << 13];
+            new Random().nextBytes(dataChunk);
+            //Log.e("uploadData", Arrays.toString(dataChunk));
 
-            Arrays.fill(dataChunk, (byte)new Random().nextInt(300));
+            //Arrays.fill(dataChunk, (byte) new Random().nextInt(300));
             //
-            ws.send(Arrays.toString(dataChunk));
+            //ws.send(Arrays.toString(dataChunk));
             //Ws max queuesize is 16mb
-            if(ws.queueSize() < 100*Arrays.toString(dataChunk).length()) {
-                count += (long) Arrays.toString(dataChunk).length();
+            if (ws.queueSize() <  dataChunk.length) {
+                count += (long) dataChunk.length;
+                ws.send(ByteString.of(dataChunk));
             }
-            elapsed = System.nanoTime() - startTime;
             toFinish = (elapsed >= totalTime);
         }
 
-        //count -= ws.queueSize();
+        count -= ws.queueSize();
 
         ws.close(CLOSE_SUCCESS, "Upload completed !");
 
-        int sentInKB = (int) (count/1024);
-        long rate = (count/(long)Math.pow(2,20 ))/ ClientUpload.TEST_TIME;
-        Log.d(TAG, "sent="+sentInKB+"KB rate="+rate+"Mbps");
-        Log.d(TAG, "Upload rate = "+rate+"Mbps");
+        int sentInKB = (int) (count / 1024);
+        long rate = (count / (long) Math.pow(2, 20)) / ClientUpload.TEST_TIME;
+        Log.d(TAG, "sent=" + sentInKB + "KB rate=" + rate + "Mbps");
+        Log.d(TAG, "Upload rate = " + rate + "Mbps");
     }
+
     
     private void periodic() {
         Long now = System.nanoTime();
