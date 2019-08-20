@@ -161,16 +161,6 @@ open class Client(private val settings: Settings) : WebSocketListener() {
         tLast = System.nanoTime()
         t0 = tLast
 
-        // Basically make the code synchronous here:
-        /*val svc = client.dispatcher().executorService()
-        svc.shutdown()
-        try {
-            svc.awaitTermination(30, TimeUnit.SECONDS)
-        } catch (e: InterruptedException) {
-            // TODO(bassosimone): how to handle this error condition?
-            Log.e(TAG, "runDownload awaitTermination encountered exception", e)
-        }*/
-
         return rv
     }
 
