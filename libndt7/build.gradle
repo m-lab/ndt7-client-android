@@ -1,28 +1,40 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName "0.1.3"
+        consumerProguardFiles 'proguard-rules.pro'
 
         compileOptions {
             sourceCompatibility 1.8
             targetCompatibility 1.8
         }
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
     }
 
     buildTypes {
+        debug {
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -30,11 +42,31 @@ android {
 
 dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
-    implementation "com.android.support:appcompat-v7:$support_library_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.google.code.gson:gson:$gson_version"
 }
 
 repositories {
     mavenCentral()
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                name "Soluto-Private"
+                url = uri("https://maven.pkg.github.com/Soluto-Private/ndt7-kotlin")
+                credentials {
+                    username = System.getenv("GITHUB_USERNAME") ?: GITHUB_USERNAME
+                    password = System.getenv("GITHUB_PERSONAL_TOKEN") ?: GITHUB_PERSONAL_TOKEN
+                }
+            }
+        }
+        publications {
+            release(MavenPublication) {
+                from components.release
+                version = android.defaultConfig.versionName
+            }
+        }
+    }
 }
