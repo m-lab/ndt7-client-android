@@ -1,0 +1,21 @@
+name: Build
+on:
+  pull_request:
+    branches:
+      - master
+env:
+  GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
+  GITHUB_PERSONAL_TOKEN: ${{ secrets.GH_PAT }}
+jobs:
+  building:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repo
+        uses: actions/checkout@v2
+      - name: Run tests (Debug)
+        run: ./gradlew app:testDebug
+      - name: Run tests (Release)
+        run: ./gradlew app:testRelease
+      - name: Assemble aar (Release)
+        run: ./gradlew libndt7:assembleRelease

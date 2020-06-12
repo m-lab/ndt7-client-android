@@ -1,0 +1,127 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+
+  desc "Build and publish to github packages"
+  lane :release do |options|
+    begin
+      android_set_version_code(gradle_file: "libndt7/build.gradle")
+      analyze_commits(match: 'v*', debug: true)
+
+      next_version = lane_context[SharedValues::RELEASE_NEXT_VERSION]
+      sendBuildStartedSlack(options[:slackUrl], "Release Build started", '#sonash-radar-releases', options[:githubRunId], next_version)
+
+      android_set_version_name(gradle_file: "libndt7/build.gradle",
+        version_name: next_version,
+      )
+      puts android_get_version_name(gradle_file: "libndt7/build.gradle")
+
+      # do build stuff here
+      gradle(task: "libndt7:clean libndt7:assemble", build_type: "Release")
+
+      # generates release notes for this version
+            notes = conventional_changelog(
+              title: 'NDT7 Kotlin Client'
+            )
+            Actions.sh("git config user.name soluto-jenkins")
+            Actions.sh("git config user.email networkscan@asurion.com")
+            puts notes
+            tag = "v#{next_version}"
+            set_github_release(
+              repository_name: "Soluto-Private/ndt7-kotlin",
+              api_token: options[:githubApiToken],
+              name: next_version,
+              tag_name: tag,
+              description: notes,
+              commitish: "master",
+            )
+
+      sendBuildSuccessSlack(options[:slackUrl], "Release Build Successful", "#sonash-radar-releases")
+    rescue => exception
+      on_error(options[:slackUrl], "Release build failed", "#sonash-radar-releases", exception, options[:githubRunId])
+    end
+  end
+end
+
+
+def sendBuildStartedSlack(slackUrl, message, channel, githubRunId, buildNumber)
+  slack(
+    slack_url: slackUrl,
+    message: "NDT7 Kotlin Client :android: " + message,
+    channel: channel,
+    username: "Network Scan Bot",
+    payload: {
+      "Build Date" => Time.new.to_s
+    },
+    default_payloads: [:git_branch, :git_author, :last_git_commit], # Optional, lets you specify a whitelist of default payloads to include. Pass an empty array to suppress all the default payloads.
+    attachment_properties: { # Optional, lets you specify any other properties available for attachments in the slack API (see https://api.slack.com/docs/attachments).
+      color: "#3278BD",
+      fields: [
+        {
+          title: "Build Number",
+          value: buildNumber,
+        },
+        {
+          title: "Build URL",
+          value: "https://github.com/Soluto-Private/ndt7-kotlin/actions/runs/" + githubRunId,
+        }
+      ]
+    }
+  )
+end
+
+def sendBuildSuccessSlack(slackUrl, message, channel)
+  slack(
+    slack_url: slackUrl,
+    message: "NDT7 Kotlin Client :android: " + message,
+    channel: channel,
+    username: "Network Scan Bot",
+    payload: {},
+    default_payloads: [], # Optional, lets you specify a whitelist of default payloads to include. Pass an empty array to suppress all the default payloads.
+    attachment_properties: { # Optional, lets you specify any other properties available for attachments in the slack API (see https://api.slack.com/docs/attachments).
+      color: "#4BB543",
+    }
+  )
+end
+
+def on_error(slackUrl, message, channel, exception, githubRunId)
+  slack(
+    slack_url: slackUrl,
+    username: "Network Scan Bot",
+    channel: channel,
+    message: "NDT7 Kotlin Client :android: " + message,
+    success: false,
+    payload: {},
+    default_payloads: [],
+    attachment_properties: { # Optional, lets you specify any other properties available for attachments in the slack API (see https://api.slack.com/docs/attachments).
+      color: "#FC100D",
+      fields: [
+        {
+          title: "Error",
+          value: exception.to_s,
+        },
+        {
+          title: "Build URL",
+          value: "https://github.com/Soluto-Private/ndt7-kotlin/actions/runs/" + githubRunId,
+        }
+      ]
+    }
+  )
+
+  raise exception
+end

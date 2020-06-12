@@ -1,0 +1,43 @@
+name: Deploy NDT7 Kotlin Client
+on:
+  push:
+    branches:
+      - master
+
+env:
+  GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
+  GITHUB_PERSONAL_TOKEN: ${{ secrets.GH_PAT }}
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_API_TOKEN: "${{ secrets.PUBLISH_RELEASE_TOKEN }}"
+      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - name: Run tests (Debug)
+        run: ./gradlew app:testDebug
+      - name: Run tests (Release)
+        run: ./gradlew app:testRelease
+      - name: Assemble aar (Release)
+        uses: maierj/fastlane-action@v1.4.0
+        with:
+          lane: "release"
+          options: '{ "githubApiToken": "${{ env.GITHUB_API_TOKEN }}", "slackUrl": "${{ env.SLACK_WEBHOOK }}", "githubRunId": "${{ github.run_id }}" }'
+      - name: Commit Version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name 'Github'
+          git config --global user.email 'github@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.PUBLISH_RELEASE_TOKEN }}@github.com/${{ github.repository }}
+          git add libndt7/build.gradle
+          git commit -m "[ci skip] version bump"
+          git push
+      - name: Publish APK to github packages
+        run: ./gradlew libndt7:publish
