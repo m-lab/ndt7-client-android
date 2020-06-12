@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'maven-publish'
 
 android {
+
     compileSdkVersion 29
 
     defaultConfig {
