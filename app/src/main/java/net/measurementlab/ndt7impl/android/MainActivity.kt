@@ -38,10 +38,9 @@ class MainActivity : AppCompatActivity() {
             client.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD)
         }
 
-
     }
 
-    fun createHttpClient(connectTimeout: Long = 10, readTimeout: Long = 10, writeTimeout: Long = 10): OkHttpClient {
+    private fun createHttpClient(connectTimeout: Long = 10, readTimeout: Long = 10, writeTimeout: Long = 10): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.NONE
         return OkHttpClient.Builder()

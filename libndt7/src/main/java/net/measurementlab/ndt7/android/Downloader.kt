@@ -28,7 +28,7 @@ class Downloader(
     private val gson = Gson()
 
 
-    override fun onOpen(ws: WebSocket, response: Response) {
+    override fun onOpen(webSocket: WebSocket, response: Response) {
         startTime = currentTimeInMicroseconds()
     }
 
@@ -45,11 +45,11 @@ class Downloader(
     }
 
     override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-        numBytes += bytes.size().toDouble()
+        numBytes += bytes.size.toDouble()
         tryToUpdateClient()
     }
 
-    override fun onClosing(ws: WebSocket, code: Int, reason: String) {
+    override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
 
         val clientResponse = generateResponse(startTime, numBytes, DOWNLOAD)
         when (code) {
@@ -62,13 +62,13 @@ class Downloader(
         }
 
         releaseResources()
-        ws.close(1000, null)
+        webSocket.close(1000, null)
     }
 
-    override fun onFailure(ws: WebSocket, throwable: Throwable, response: Response?) {
-        cbRegistry.onFinishedCbk(generateResponse(startTime, numBytes, DOWNLOAD), throwable, DOWNLOAD)
+    override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+        cbRegistry.onFinishedCbk(generateResponse(startTime, numBytes, DOWNLOAD), t, DOWNLOAD)
         releaseResources()
-        ws.close(1001, null)
+        webSocket.close(1001, null)
     }
 
     fun beginDownload(uri: URI, httpClient: OkHttpClient?) {

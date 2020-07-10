@@ -47,7 +47,7 @@ abstract class NDTTest(private val settings: Settings, private var httpClient: O
 
                 override fun onResponse(call: Call, response: Response) {
                     try {
-                        val hostInfo: HostnameResponse = Gson().fromJson(response.body()?.string(), HostnameResponse::class.java)
+                        val hostInfo: HostnameResponse = Gson().fromJson(response.body?.string(), HostnameResponse::class.java)
                         selectTestType(testType, hostInfo.fqdn, speedtestLock)
                     } catch (e: Exception) {
                         onFinished(null, e, testType)

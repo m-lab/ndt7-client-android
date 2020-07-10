@@ -2,8 +2,8 @@ package net.measurementlab.ndt7impl.androidTest
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
-import net.measurementlab.ndt7.android.AppInfo
-import net.measurementlab.ndt7.android.ClientResponse
+import net.measurementlab.ndt7.android.models.AppInfo
+import net.measurementlab.ndt7.android.models.ClientResponse
 import net.measurementlab.ndt7.android.utils.DataConverter
 
 import org.junit.Test

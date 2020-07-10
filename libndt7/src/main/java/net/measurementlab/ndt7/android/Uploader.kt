@@ -43,7 +43,7 @@ class Uploader(
     }
 
 
-override fun onClosing(ws: WebSocket, code: Int, reason: String) {
+override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
 
     val clientResponse = generateResponse(startTime, totalBytesSent, UPLOAD)
     when (code) {
@@ -56,14 +56,14 @@ override fun onClosing(ws: WebSocket, code: Int, reason: String) {
     }
 
     releaseResources()
-    ws.close(1000, null)
+    webSocket.close(1000, null)
 }
 
-    override fun onFailure(ws: WebSocket, throwable: Throwable, response: okhttp3.Response?) {
-        cbRegistry.onFinishedCbk(generateResponse(startTime, totalBytesSent, UPLOAD), throwable, UPLOAD)
+    override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
+        cbRegistry.onFinishedCbk(generateResponse(startTime, totalBytesSent, UPLOAD), t, UPLOAD)
 
         releaseResources()
-        ws.close(1001, null)
+        webSocket.close(1001, null)
     }
 
     fun beginUpload(uri: URI, httpClient: OkHttpClient?) {
@@ -90,11 +90,11 @@ override fun onClosing(ws: WebSocket, code: Int, reason: String) {
     private fun sendToWebSocket(data: ByteString, ws: WebSocket) {
         val byteString = performDynamicTuning(data, ws)
 
-        val underBuffered = byteString.size() * 7
+        val underBuffered = byteString.size * 7
 
         while (ws.queueSize() < underBuffered) {
             ws.send(byteString)
-            totalBytesSent += byteString.size()
+            totalBytesSent += byteString.size
         }
         tryToUpdateUpload(totalBytesSent, ws)
     }
@@ -104,8 +104,8 @@ override fun onClosing(ws: WebSocket, code: Int, reason: String) {
     //it will gradually increase the size of data if the websocket queue isn't filling up
     private fun performDynamicTuning(data: ByteString, ws: WebSocket): ByteString {
 
-        return if ( (data.size() * 2 < MAX_MESSAGE_SIZE) && queueIsUnsaturated(data, ws)) {
-            ByteString.of(*ByteArray(data.size())) //double the size of data
+        return if ( (data.size * 2 < MAX_MESSAGE_SIZE) && queueIsUnsaturated(data, ws)) {
+            ByteString.of(*ByteArray(data.size)) //double the size of data
         }
         else {
             data
@@ -113,7 +113,7 @@ override fun onClosing(ws: WebSocket, code: Int, reason: String) {
     }
 
     private fun queueIsUnsaturated(data:ByteString, ws: WebSocket): Boolean {
-        return data.size() < (totalBytesSent-ws.queueSize()) / 16
+        return data.size < (totalBytesSent-ws.queueSize()) / 16
     }
 
     private fun tryToUpdateUpload(total: Double, ws: WebSocket) {
