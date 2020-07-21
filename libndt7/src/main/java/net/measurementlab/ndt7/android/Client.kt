@@ -1,6 +1,5 @@
 package net.measurementlab.ndt7.android
 
-import android.support.annotation.CheckResult
 import android.util.Log
 import com.google.gson.Gson
 
@@ -29,10 +28,11 @@ open class Client(private val settings: Settings) : WebSocketListener() {
     private val gson = Gson()
     private val measurementInterval = TimeUnit.NANOSECONDS.convert(250, TimeUnit.MILLISECONDS)
 
-    private var count = 0.0
+    private var count: Long = 0
     private var rv = true
     private var t0: Long = 0
     private var tLast: Long = 0
+    private var elapsed: Double = 0.0
 
     open fun onLogInfo(message: String?) {
         Log.d(TAG, "onLogInfo: $message")
@@ -49,6 +49,10 @@ open class Client(private val settings: Settings) : WebSocketListener() {
     open fun onClientDownloadMeasurement(measurement: Measurement) {
         Log.d(TAG, "onClientDownloadMeasurement: $measurement")
     }
+    open fun onDownloadClose() {
+        Log.d(TAG, "onDownloadClose")
+
+    }
 
     override fun onOpen(ws: WebSocket?,
                         resp: Response?) {
@@ -58,8 +62,7 @@ open class Client(private val settings: Settings) : WebSocketListener() {
     override fun onMessage(ws: WebSocket?,
                            text: String) {
         onLogInfo("WebSocket onMessage")
-        count += text.length.toDouble()
-        periodic()
+        count += text.length
 
         val measurement: Measurement
 
@@ -71,11 +74,13 @@ open class Client(private val settings: Settings) : WebSocketListener() {
         }
 
         onServerDownloadMeasurement(measurement)
+        elapsed = measurement.elapsed
+        periodic()
     }
 
     override fun onMessage(ws: WebSocket?,
                            bytes: ByteString) {
-        count += bytes.size().toDouble()
+        count += bytes.size()
         periodic()
     }
 
@@ -84,6 +89,7 @@ open class Client(private val settings: Settings) : WebSocketListener() {
                            reason: String?) {
         // TODO(bassosimone): make sure code has the correct value otherwise
         // we must return an error to the caller.
+        onDownloadClose()
         ws.close(1000, null)
     }
 
@@ -94,7 +100,6 @@ open class Client(private val settings: Settings) : WebSocketListener() {
         rv = false
     }
 
-    @CheckResult
     fun runDownload(): Boolean {
         val uri: URI
 
@@ -156,16 +161,6 @@ open class Client(private val settings: Settings) : WebSocketListener() {
         tLast = System.nanoTime()
         t0 = tLast
 
-        // Basically make the code synchronous here:
-        val svc = client.dispatcher().executorService()
-        svc.shutdown()
-        try {
-            svc.awaitTermination(30, TimeUnit.SECONDS)
-        } catch (e: InterruptedException) {
-            // TODO(bassosimone): how to handle this error condition?
-            Log.e(TAG, "runDownload awaitTermination encountered exception", e)
-        }
-
         return rv
     }
 
@@ -173,7 +168,7 @@ open class Client(private val settings: Settings) : WebSocketListener() {
         val now = System.nanoTime()
 
         if (now - tLast > measurementInterval) {
-            val measurement = Measurement((now - t0).toDouble(), null, null, null)
+            val measurement = Measurement(elapsed, null, null, Measurement.AppInfo(count))
             tLast = now
             onClientDownloadMeasurement(measurement)
         }

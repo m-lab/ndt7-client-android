@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
-
+apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 28
 
@@ -32,10 +32,15 @@ android {
 
 dependencies {
     implementation project(":libndt7")
-    implementation "com.android.support:appcompat-v7:$support_library_version"
     implementation "com.android.support.constraint:constraint-layout:$constraint_layout_version"
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.google.code.gson:gson:$gson_version"
+    implementation "com.jakewharton:butterknife:$butterknife_version"
+    implementation "com.google.android.material:material:1.1.0-alpha09"
+    kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
+
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknife_version"
 }
 repositories {
     mavenCentral()
