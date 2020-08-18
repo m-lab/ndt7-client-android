@@ -4,13 +4,13 @@ package net.measurementlab.ndt7.android
 import com.google.gson.Gson
 import net.measurementlab.ndt7.android.utils.DataConverter.currentTimeInMicroseconds
 import net.measurementlab.ndt7.android.utils.DataConverter.generateResponse
-import net.measurementlab.ndt7.android.utils.NDT7Constants.MAX_MESSAGE_SIZE
 import net.measurementlab.ndt7.android.utils.NDT7Constants.MAX_RUN_TIME
 import net.measurementlab.ndt7.android.utils.NDT7Constants.MEASUREMENT_INTERVAL
 import net.measurementlab.ndt7.android.utils.NDT7Constants.MIN_MESSAGE_SIZE
 import net.measurementlab.ndt7.android.NDTTest.TestType.*
 import net.measurementlab.ndt7.android.models.CallbackRegistry
 import net.measurementlab.ndt7.android.models.Measurement
+import net.measurementlab.ndt7.android.utils.PayloadTransformer
 import net.measurementlab.ndt7.android.utils.SocketFactory
 import okhttp3.OkHttpClient
 import okhttp3.WebSocket
@@ -88,7 +88,7 @@ override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
     }
 
     private fun sendToWebSocket(data: ByteString, ws: WebSocket) {
-        val byteString = performDynamicTuning(data, ws)
+        val byteString = PayloadTransformer.performDynamicTuning(data, ws.queueSize(), totalBytesSent)
 
         val underBuffered = byteString.size * 7
 
@@ -97,23 +97,6 @@ override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             totalBytesSent += byteString.size
         }
         tryToUpdateUpload(totalBytesSent, ws)
-    }
-
-
-    //this is gonna let higher speed clients saturate their pipes better
-    //it will gradually increase the size of data if the websocket queue isn't filling up
-    private fun performDynamicTuning(data: ByteString, ws: WebSocket): ByteString {
-
-        return if ( (data.size * 2 < MAX_MESSAGE_SIZE) && queueIsUnsaturated(data, ws)) {
-            ByteString.of(*ByteArray(data.size)) //double the size of data
-        }
-        else {
-            data
-        }
-    }
-
-    private fun queueIsUnsaturated(data:ByteString, ws: WebSocket): Boolean {
-        return data.size < (totalBytesSent-ws.queueSize()) / 16
     }
 
     private fun tryToUpdateUpload(total: Double, ws: WebSocket) {
