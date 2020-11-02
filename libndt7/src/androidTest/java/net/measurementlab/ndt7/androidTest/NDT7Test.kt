@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 import net.measurementlab.ndt7.android.NDTTest
 import net.measurementlab.ndt7.android.models.ClientResponse
 import net.measurementlab.ndt7.android.models.Measurement
-import net.measurementlab.ndt7.android.models.Settings
 import net.measurementlab.ndt7.android.utils.DataConverter
 import org.junit.Assert
 import org.junit.Test
@@ -14,9 +13,7 @@ class NDT7HealthTest {
 
     @Test
     fun test_networkCallable_can_perform_ndt7_speed_test() {
-        val settings = Settings(port = 443, skipTlsCertificateVerification = true)
-
-        val client = NDTTestImpl(settings)
+        val client = NDTTestImpl()
         client.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD)
 
         //let speed test run for a bit
@@ -33,9 +30,7 @@ class NDT7HealthTest {
     @Test
     fun test_networkCallable_can_continue_speed_test_despite_error() {
 
-        val settings = Settings(port = 443, skipTlsCertificateVerification = true)
-
-        val client = NDTTestImpl(settings)
+        val client = NDTTestImpl()
         client.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD)
         client.onFinished(null, Throwable("test", null), NDTTest.TestType.DOWNLOAD)
         //let speed test run for a bit
@@ -50,7 +45,7 @@ class NDT7HealthTest {
 
     }
 
-    private class NDTTestImpl constructor(settings: Settings) : NDTTest(settings) {
+    private class NDTTestImpl : NDTTest() {
         var dataWrapper: NDTWrapper = NDTWrapper()
         private var gson: Gson = Gson()
 

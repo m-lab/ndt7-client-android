@@ -7,7 +7,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import net.measurementlab.ndt7.android.utils.DataConverter
 import net.measurementlab.ndt7.android.NDTTest
 import net.measurementlab.ndt7.android.models.ClientResponse
-import net.measurementlab.ndt7.android.models.Settings
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
@@ -20,10 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val settings = Settings()
-        settings.port = 443
-        settings.skipTlsCertificateVerification = true
-        val client = NDTTestImpl(settings, createHttpClient())
+        val client = NDTTestImpl(createHttpClient())
 
         button.setOnClickListener {
             client.startTest(NDTTest.TestType.DOWNLOAD)
@@ -51,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
     }
 
-    private inner class NDTTestImpl constructor(settings: Settings, okHttpClient: OkHttpClient) : NDTTest(settings, okHttpClient) {
+    private inner class NDTTestImpl constructor(okHttpClient: OkHttpClient) : NDTTest(okHttpClient) {
 
         override fun onDownloadProgress(clientResponse: ClientResponse) {
             super.onDownloadProgress(clientResponse)

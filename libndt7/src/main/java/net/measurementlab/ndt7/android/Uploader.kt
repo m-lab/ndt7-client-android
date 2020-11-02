@@ -66,8 +66,8 @@ override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         webSocket.close(1001, null)
     }
 
-    fun beginUpload(uri: URI, httpClient: OkHttpClient?) {
-        val ws: WebSocket = SocketFactory.establishSocketConnection(uri, httpClient, this)
+    fun beginUpload(url: String, httpClient: OkHttpClient?) {
+        val ws: WebSocket = SocketFactory.establishSocketConnection(url, httpClient, this)
         startTime = currentTimeInMicroseconds()
         previous = startTime
 

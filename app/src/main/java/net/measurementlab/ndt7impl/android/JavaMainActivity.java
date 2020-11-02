@@ -10,7 +10,6 @@ import net.measurementlab.ndt7.android.models.ClientResponse;
 import net.measurementlab.ndt7.android.utils.DataConverter;
 import net.measurementlab.ndt7.android.models.Measurement;
 import net.measurementlab.ndt7.android.NDTTest;
-import net.measurementlab.ndt7.android.models.Settings;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,11 +24,8 @@ public class JavaMainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
 
-        Settings settings = new Settings();
-        settings.setPort(443);
-        settings.setSkipTlsCertificateVerification(true);
 
-        NDTTestImpl ndtTestImpl = new NDTTestImpl(settings, null);
+        NDTTestImpl ndtTestImpl = new NDTTestImpl(null);
 
         ndtTestImpl.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD);
 
@@ -45,8 +41,8 @@ public class JavaMainActivity extends Activity {
 
     class NDTTestImpl extends NDTTest {
 
-        public NDTTestImpl(@NotNull Settings settings, @Nullable OkHttpClient httpClient) {
-            super(settings, httpClient);
+        public NDTTestImpl(@Nullable OkHttpClient httpClient) {
+            super(httpClient);
         }
 
         @Override

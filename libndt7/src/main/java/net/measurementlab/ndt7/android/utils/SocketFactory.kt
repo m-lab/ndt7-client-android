@@ -8,15 +8,16 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import java.lang.Error
 import java.net.URI
+import java.net.URL
 
 internal object SocketFactory {
 
 
     //establishes a websocket with an ndt server
-    fun establishSocketConnection(uri: URI, httpClient: OkHttpClient?, listener: WebSocketListener): WebSocket {
+    fun establishSocketConnection(url: String, httpClient: OkHttpClient?, listener: WebSocketListener): WebSocket {
 
         val request = Request.Builder()
-                .url(uri.toString())
+                .url(url)
                 .addHeader("Sec-WebSocket-Protocol", "net.measurementlab.ndt.v7")
                 .addHeader("User-Agent", "ndt7-kotlin-client ${BuildConfig.VERSION_NAME}")
                 .build()

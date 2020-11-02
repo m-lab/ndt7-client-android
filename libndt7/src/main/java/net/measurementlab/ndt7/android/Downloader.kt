@@ -12,7 +12,6 @@ import net.measurementlab.ndt7.android.utils.SocketFactory
 import okhttp3.*
 import okio.ByteString
 import java.lang.Error
-import java.net.URI
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Semaphore
 
@@ -71,8 +70,8 @@ class Downloader(
         webSocket.close(1001, null)
     }
 
-    fun beginDownload(uri: URI, httpClient: OkHttpClient?) {
-        SocketFactory.establishSocketConnection(uri, httpClient, this)
+    fun beginDownload(url: String, httpClient: OkHttpClient?) {
+        SocketFactory.establishSocketConnection(url, httpClient, this)
     }
 
     private fun tryToUpdateClient() {
