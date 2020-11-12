@@ -7,6 +7,7 @@ import net.measurementlab.ndt7.android.models.CallbackRegistry
 import net.measurementlab.ndt7.android.models.Measurement
 import net.measurementlab.ndt7.android.utils.DataConverter.currentTimeInMicroseconds
 import net.measurementlab.ndt7.android.utils.DataConverter.generateResponse
+import net.measurementlab.ndt7.android.utils.NDT7Constants.MAX_QUEUE_SIZE
 import net.measurementlab.ndt7.android.utils.NDT7Constants.MAX_RUN_TIME
 import net.measurementlab.ndt7.android.utils.NDT7Constants.MEASUREMENT_INTERVAL
 import net.measurementlab.ndt7.android.utils.NDT7Constants.MIN_MESSAGE_SIZE
@@ -42,8 +43,7 @@ class Uploader(
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-
-        val clientResponse = generateResponse(startTime, totalBytesSent, TestType.UPLOAD)
+        val clientResponse = generateResponse(startTime, totalBytesSent - webSocket.queueSize(), TestType.UPLOAD)
         when (code) {
             1000 -> {
                 cbRegistry.onFinishedCbk(clientResponse, null, TestType.UPLOAD)
@@ -58,7 +58,7 @@ class Uploader(
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
-        cbRegistry.onFinishedCbk(generateResponse(startTime, totalBytesSent, TestType.UPLOAD), t, TestType.UPLOAD)
+        cbRegistry.onFinishedCbk(generateResponse(startTime, totalBytesSent - webSocket.queueSize(), TestType.UPLOAD), t, TestType.UPLOAD)
 
         releaseResources()
         webSocket.close(1001, null)
@@ -89,7 +89,7 @@ class Uploader(
     private fun sendToWebSocket(data: ByteString, ws: WebSocket) {
         val underBuffered = data.size * 7
 
-        while (ws.queueSize() < underBuffered) {
+        while (ws.queueSize() < underBuffered && ws.queueSize() + data.size < MAX_QUEUE_SIZE) {
             ws.send(data)
             totalBytesSent += data.size
         }
