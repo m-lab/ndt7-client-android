@@ -1,3 +1,4 @@
+
 package net.measurementlab.ndt7.androidTest
 
 import com.google.gson.Gson
@@ -16,7 +17,7 @@ class NDT7HealthTest {
         val client = NDTTestImpl()
         client.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD)
 
-        //let speed test run for a bit
+        // let speed test run for a bit
         Thread.sleep(25000L)
 
         Assert.assertTrue(client.dataWrapper.downloadSpeedAppNDT7.size > 5)
@@ -33,7 +34,7 @@ class NDT7HealthTest {
         val client = NDTTestImpl()
         client.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD)
         client.onFinished(null, Throwable("test", null), NDTTest.TestType.DOWNLOAD)
-        //let speed test run for a bit
+        // let speed test run for a bit
         Thread.sleep(25000)
 
         Assert.assertTrue(client.dataWrapper.downloadSpeedAppNDT7.size > 5)
@@ -42,7 +43,6 @@ class NDT7HealthTest {
         Assert.assertTrue(client.dataWrapper.uploadSpeedNDT7.size > 5)
         Assert.assertTrue(client.dataWrapper.uploadFinished)
         Assert.assertTrue(client.dataWrapper.downloadFinished)
-
     }
 
     private class NDTTestImpl : NDTTest() {
@@ -83,21 +83,18 @@ class NDT7HealthTest {
 
             clientResponse?.let {
                 val speed = DataConverter.convertToMbps(it)
-                //do something with the speed
+                // do something with the speed
             }
-
         }
-
     }
 
     data class NDTWrapper(
-            @SerializedName("downloadSpeedNDT7") var downloadSpeedNDT7: ArrayList<String> = arrayListOf(),
-            @SerializedName("uploadSpeedNDT7") var uploadSpeedNDT7: ArrayList<String> = arrayListOf(),
-            @SerializedName("downloadSpeedAppNDT7") var downloadSpeedAppNDT7: ArrayList<String> = arrayListOf(),
-            @SerializedName("uploadSpeedAppNDT7") var uploadSpeedAppNDT7: ArrayList<String> = arrayListOf(),
-            @SerializedName("downloadFinished") var downloadFinished: Boolean = false,
-            @SerializedName("uploadFinished") var uploadFinished: Boolean = false
+        @SerializedName("downloadSpeedNDT7") var downloadSpeedNDT7: ArrayList<String> = arrayListOf(),
+        @SerializedName("uploadSpeedNDT7") var uploadSpeedNDT7: ArrayList<String> = arrayListOf(),
+        @SerializedName("downloadSpeedAppNDT7") var downloadSpeedAppNDT7: ArrayList<String> = arrayListOf(),
+        @SerializedName("uploadSpeedAppNDT7") var uploadSpeedAppNDT7: ArrayList<String> = arrayListOf(),
+        @SerializedName("downloadFinished") var downloadFinished: Boolean = false,
+        @SerializedName("uploadFinished") var uploadFinished: Boolean = false
 
     )
-
 }

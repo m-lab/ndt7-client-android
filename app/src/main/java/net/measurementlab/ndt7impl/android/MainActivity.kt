@@ -1,12 +1,12 @@
 package net.measurementlab.ndt7impl.android
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import net.measurementlab.ndt7.android.utils.DataConverter
 import net.measurementlab.ndt7.android.NDTTest
 import net.measurementlab.ndt7.android.models.ClientResponse
+import net.measurementlab.ndt7.android.utils.DataConverter
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
 
         button.setOnClickListener {
             client.startTest(NDTTest.TestType.DOWNLOAD)
-
         }
 
         button2.setOnClickListener {
@@ -33,18 +32,17 @@ class MainActivity : AppCompatActivity() {
         button3.setOnClickListener {
             client.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD)
         }
-
     }
 
     private fun createHttpClient(connectTimeout: Long = 10, readTimeout: Long = 10, writeTimeout: Long = 10): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.NONE
         return OkHttpClient.Builder()
-                .connectTimeout(connectTimeout, TimeUnit.SECONDS)
-                .readTimeout(readTimeout, TimeUnit.SECONDS)
-                .writeTimeout(writeTimeout, TimeUnit.SECONDS)
-                .addInterceptor(interceptor)
-                .build()
+            .connectTimeout(connectTimeout, TimeUnit.SECONDS)
+            .readTimeout(readTimeout, TimeUnit.SECONDS)
+            .writeTimeout(writeTimeout, TimeUnit.SECONDS)
+            .addInterceptor(interceptor)
+            .build()
     }
 
     private inner class NDTTestImpl constructor(okHttpClient: OkHttpClient) : NDTTest(okHttpClient) {
@@ -71,7 +69,6 @@ class MainActivity : AppCompatActivity() {
                 textView2.text = speed
             }
             Log.d(TAG, "upload speed: $speed")
-
         }
 
         override fun onFinished(clientResponse: ClientResponse?, error: Throwable?, testType: TestType) {
@@ -81,6 +78,5 @@ class MainActivity : AppCompatActivity() {
             error?.printStackTrace()
             Log.d(TAG, "ALL DONE: $speed")
         }
-
     }
 }

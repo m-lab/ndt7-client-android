@@ -20,6 +20,6 @@ object DataConverter {
     }
 
     fun currentTimeInMicroseconds(): Long {
-        return System.nanoTime()/1000
+        return System.nanoTime() / 1000
     }
 }

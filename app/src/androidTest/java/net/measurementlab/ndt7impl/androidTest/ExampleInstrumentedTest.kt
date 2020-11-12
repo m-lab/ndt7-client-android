@@ -5,11 +5,9 @@ import androidx.test.runner.AndroidJUnit4
 import net.measurementlab.ndt7.android.models.AppInfo
 import net.measurementlab.ndt7.android.models.ClientResponse
 import net.measurementlab.ndt7.android.utils.DataConverter
-
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.

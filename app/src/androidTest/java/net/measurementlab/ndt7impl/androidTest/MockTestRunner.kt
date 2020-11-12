@@ -1,6 +1,5 @@
 package net.measurementlab.ndt7impl.androidTest
 
-
 import android.os.Bundle
 import android.os.StrictMode
 import androidx.test.runner.AndroidJUnitRunner

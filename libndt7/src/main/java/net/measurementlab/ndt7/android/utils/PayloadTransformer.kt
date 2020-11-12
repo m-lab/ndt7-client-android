@@ -4,16 +4,14 @@ import okio.ByteString
 
 internal object PayloadTransformer {
 
-    //this is gonna let higher speed clients saturate their pipes better
-    //it will gradually increase the size of data if the websocket queue isn't filling up
+    // this is gonna let higher speed clients saturate their pipes better
+    // it will gradually increase the size of data if the websocket queue isn't filling up
     fun performDynamicTuning(data: ByteString, queueSize: Long, totalBytesSent: Double): ByteString {
 
         return if (data.size < NDT7Constants.MAX_MESSAGE_SIZE && data.size < (totalBytesSent - queueSize) / 16) {
-            ByteString.of(*ByteArray(data.size * 2)) //double the size of data
-        }
-        else {
+            ByteString.of(*ByteArray(data.size * 2)) // double the size of data
+        } else {
             data
         }
     }
-
 }
