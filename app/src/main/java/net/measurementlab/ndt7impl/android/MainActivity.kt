@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         button3.setOnClickListener {
-            client.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD)
+            client.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD)
         }
 
     }

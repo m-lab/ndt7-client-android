@@ -71,7 +71,7 @@ abstract class NDTTest(private var httpClient: OkHttpClient? = null): DataPublis
                 speedtestLock.release()
                 executorService?.submit { startUpload(urls.ndt7UploadWSS, executorService!!, speedtestLock) }
             }
-            TestType.UPLOAD_AND_DOWNLOAD -> {
+            TestType.DOWNLOAD_AND_UPLOAD -> {
                 executorService?.submit { startDownload(urls.ndt7DownloadWSS, executorService!!, speedtestLock) }
                 executorService?.submit { startUpload(urls.ndt7UploadWSS, executorService!!, speedtestLock) }
             }
@@ -107,6 +107,6 @@ abstract class NDTTest(private var httpClient: OkHttpClient? = null): DataPublis
     enum class TestType(val value: String) {
         UPLOAD("upload"),
         DOWNLOAD("download"),
-        UPLOAD_AND_DOWNLOAD("uploadAndDownload"),
+        DOWNLOAD_AND_UPLOAD("DownloadAndUpload"),
     }
 }

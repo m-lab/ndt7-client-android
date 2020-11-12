@@ -27,13 +27,13 @@ public class JavaMainActivity extends Activity {
 
         NDTTestImpl ndtTestImpl = new NDTTestImpl(null);
 
-        ndtTestImpl.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD);
+        ndtTestImpl.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD);
 
         findViewById(R.id.button).setOnClickListener(
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ndtTestImpl.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD);
+                        ndtTestImpl.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD);
                     }
                 }
         );
@@ -59,23 +59,9 @@ public class JavaMainActivity extends Activity {
         }
 
         @Override
-        public void onFinished(@Nullable ClientResponse clientResponse, @Nullable Throwable error, @NotNull TestType testType) {
-            super.onFinished(clientResponse, error, testType);
-            assert clientResponse != null;
-            System.out.println("Done Progress: " + DataConverter.convertToMbps(clientResponse));
-
-        }
-
-        @Override
         public void onMeasurementDownloadProgress(@NotNull Measurement measurement) {
             super.onMeasurementDownloadProgress(measurement);
             System.out.println("Measurement download Progress: " + measurement);
-        }
-
-        @Override
-        public void onMeasurementUploadProgress(@NotNull Measurement measurement) {
-            super.onMeasurementUploadProgress(measurement);
-            System.out.println("Measurement upload Progress: " + measurement);
         }
 
         @Override
@@ -90,5 +76,21 @@ public class JavaMainActivity extends Activity {
                 }
             });
         }
+
+        @Override
+        public void onMeasurementUploadProgress(@NotNull Measurement measurement) {
+            super.onMeasurementUploadProgress(measurement);
+            System.out.println("Measurement upload Progress: " + measurement);
+        }
+
+        @Override
+        public void onFinished(@Nullable ClientResponse clientResponse, @Nullable Throwable error, @NotNull TestType testType) {
+            super.onFinished(clientResponse, error, testType);
+            assert clientResponse != null;
+            System.out.println("Done Progress: " + DataConverter.convertToMbps(clientResponse));
+
+        }
+
+
     }
 }

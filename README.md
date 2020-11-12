@@ -1,6 +1,6 @@
 # ndt7-kotlin
 
-Kotlin implementation of the [NDT7 protocol by M-Labs](https://github.com/m-lab/ndt-server/blob/master/spec/ndt7-protocol.md)
+Kotlin implementation of the [NDT7 protocol by M-Lab](https://github.com/m-lab/ndt-server/blob/master/spec/ndt7-protocol.md)
 
 
 # How it works
@@ -70,4 +70,3 @@ We've provided two implementation examples, one for kotlin and one for java. To 
         <activity android:name=".JavaMainActivity"> //this is for java
         
 ```
-    

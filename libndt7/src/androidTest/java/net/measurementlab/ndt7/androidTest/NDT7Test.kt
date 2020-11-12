@@ -14,7 +14,7 @@ class NDT7HealthTest {
     @Test
     fun test_networkCallable_can_perform_ndt7_speed_test() {
         val client = NDTTestImpl()
-        client.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD)
+        client.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD)
 
         //let speed test run for a bit
         Thread.sleep(25000L)
@@ -31,7 +31,7 @@ class NDT7HealthTest {
     fun test_networkCallable_can_continue_speed_test_despite_error() {
 
         val client = NDTTestImpl()
-        client.startTest(NDTTest.TestType.UPLOAD_AND_DOWNLOAD)
+        client.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD)
         client.onFinished(null, Throwable("test", null), NDTTest.TestType.DOWNLOAD)
         //let speed test run for a bit
         Thread.sleep(25000)

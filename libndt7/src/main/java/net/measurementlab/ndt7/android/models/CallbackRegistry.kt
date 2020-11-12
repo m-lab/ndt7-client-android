@@ -9,4 +9,3 @@ data class CallbackRegistry(
         val measurementProgressCbk: KFunction1<Measurement, Unit>,
         val onFinishedCbk: KFunction3<ClientResponse, Throwable?, NDTTest.TestType, Unit>
 )
-
