@@ -76,23 +76,22 @@ class Uploader(
 
         val timerStart = currentTimeInMicroseconds()
         var elapsedTime = currentTimeInMicroseconds() - timerStart
+        var bytes = ByteString.of(*ByteArray(MIN_MESSAGE_SIZE))/* (1<<13) */
 
         // only allow this to run for 10 seconds, then stop
         while (elapsedTime < MAX_RUN_TIME) {
-            val bytes = ByteString.of(*ByteArray(MIN_MESSAGE_SIZE))/* (1<<13) */
+            bytes = PayloadTransformer.performDynamicTuning(bytes, ws.queueSize(), totalBytesSent)
             sendToWebSocket(bytes, ws)
             elapsedTime = currentTimeInMicroseconds() - timerStart
         }
     }
 
     private fun sendToWebSocket(data: ByteString, ws: WebSocket) {
-        val byteString = PayloadTransformer.performDynamicTuning(data, ws.queueSize(), totalBytesSent)
-
-        val underBuffered = byteString.size * 7
+        val underBuffered = data.size * 7
 
         while (ws.queueSize() < underBuffered) {
-            ws.send(byteString)
-            totalBytesSent += byteString.size
+            ws.send(data)
+            totalBytesSent += data.size
         }
         tryToUpdateUpload(totalBytesSent, ws)
     }
