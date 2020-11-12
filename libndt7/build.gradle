@@ -53,24 +53,3 @@ dependencies {
 repositories {
     mavenCentral()
 }
-
-afterEvaluate {
-    publishing {
-        repositories {
-            maven {
-                name "Soluto-Private"
-                url = uri("https://maven.pkg.github.com/Soluto-Private/ndt7-kotlin")
-                credentials {
-                    username = System.getenv("GITHUB_USERNAME") ?: GITHUB_USERNAME
-                    password = System.getenv("GITHUB_PERSONAL_TOKEN") ?: GITHUB_PERSONAL_TOKEN
-                }
-            }
-        }
-        publications {
-            release(MavenPublication) {
-                from components.release
-                version = android.defaultConfig.versionName
-            }
-        }
-    }
-}
