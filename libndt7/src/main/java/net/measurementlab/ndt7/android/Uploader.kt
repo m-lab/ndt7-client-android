@@ -87,9 +87,8 @@ class Uploader(
     }
 
     private fun sendToWebSocket(data: ByteString, ws: WebSocket) {
-        val underBuffered = data.size * 7
 
-        while (ws.queueSize() < underBuffered && ws.queueSize() + data.size < MAX_QUEUE_SIZE) {
+        while (ws.queueSize() + data.size < MAX_QUEUE_SIZE) {
             ws.send(data)
             totalBytesSent += data.size
         }
