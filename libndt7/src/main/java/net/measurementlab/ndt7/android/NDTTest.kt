@@ -102,7 +102,7 @@ abstract class NDTTest(private var httpClient: OkHttpClient? = null) : DataPubli
     }
 
     private fun getHostname(): Call? {
-        val locateServerUrl = "https://locate.measurementlab.net/v2/nearest/ndt/ndt7"
+        val locateServerUrl = "https://locate.measurementlab.net/v2/nearest/ndt/ndt7?client_name=ndt7-android&client_version=${BuildConfig.NDT7_ANDROID_VERSION_NAME}"
         val request = Request.Builder()
             .method("GET", null)
             .url(locateServerUrl)

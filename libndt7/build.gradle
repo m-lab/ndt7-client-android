@@ -6,14 +6,18 @@ apply plugin: "org.jlleitschuh.gradle.ktlint"
 
 android {
 
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 7
-        versionName "0.2.0"
+        targetSdkVersion 30
+        versionCode 8
+        versionName "0.2.1"
         consumerProguardFiles "proguard-rules.pro"
+
+        // AGP 4.1+ doesn't add VERSION_NAME or VERSION_CODE to aars by default anymore
+        def version =  '\"' + versionName.toString() +'\"'
+        buildConfigField 'String', 'NDT7_ANDROID_VERSION_NAME', version
 
         compileOptions {
             sourceCompatibility 1.8
