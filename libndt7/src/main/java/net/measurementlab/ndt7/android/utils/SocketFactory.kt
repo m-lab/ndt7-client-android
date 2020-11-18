@@ -16,7 +16,6 @@ internal object SocketFactory {
         val request = Request.Builder()
             .url(url)
             .addHeader("Sec-WebSocket-Protocol", "net.measurementlab.ndt.v7")
-            .addHeader("User-Agent", "ndt7-kotlin-client ${BuildConfig.VERSION_NAME}")
             .build()
 
         return httpClient?.newWebSocket(request, listener) ?: throw Error("socket unable to be created")
