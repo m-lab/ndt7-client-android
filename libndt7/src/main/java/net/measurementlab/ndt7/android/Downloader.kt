@@ -27,6 +27,7 @@ class Downloader(
     private var previous: Long = 0
     private var numBytes = 0.0
     private val gson = Gson()
+    private var webSocket: WebSocket? = null
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         startTime = currentTimeInMicroseconds()
@@ -72,7 +73,12 @@ class Downloader(
     }
 
     fun beginDownload(url: String, httpClient: OkHttpClient?) {
-        SocketFactory.establishSocketConnection(url, httpClient, this)
+        webSocket = SocketFactory.establishSocketConnection(url, httpClient, this)
+    }
+
+    fun cancel() {
+        webSocket?.cancel()
+        releaseResources()
     }
 
     private fun tryToUpdateClient() {

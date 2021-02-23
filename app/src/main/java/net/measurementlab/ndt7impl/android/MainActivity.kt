@@ -32,6 +32,10 @@ class MainActivity : AppCompatActivity() {
         button3.setOnClickListener {
             client.startTest(NDTTest.TestType.DOWNLOAD_AND_UPLOAD)
         }
+
+        stopTestButton.setOnClickListener {
+            client.stopTest()
+        }
     }
 
     private fun createHttpClient(connectTimeout: Long = 10, readTimeout: Long = 10, writeTimeout: Long = 10): OkHttpClient {
