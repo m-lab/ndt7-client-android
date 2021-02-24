@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit
 // You MUST not instantiate more than one NDTTest instance
 abstract class NDTTest(private var httpClient: OkHttpClient? = null) : DataPublisher {
 
+    private var downloader: Downloader? = null
     private var executorService: ExecutorService? = null
     private var runLock: Semaphore = Semaphore(1)
 
@@ -69,6 +70,12 @@ abstract class NDTTest(private var httpClient: OkHttpClient? = null) : DataPubli
         )
     }
 
+    fun stopTest() {
+        downloader?.cancel()
+        executorService?.shutdown()
+        runLock.release()
+    }
+
     private fun selectTestType(testType: TestType, urls: Urls, speedtestLock: Semaphore) {
         when (testType) {
             TestType.DOWNLOAD -> {
@@ -98,7 +105,9 @@ abstract class NDTTest(private var httpClient: OkHttpClient? = null) : DataPubli
         speedtestLock.tryAcquire(TEST_MAX_WAIT_TIME, TimeUnit.SECONDS)
         val cbRegistry = CallbackRegistry(this::onDownloadProgress, this::onMeasurementDownloadProgress, this::onFinished)
 
-        Downloader(cbRegistry, executorService, speedtestLock).beginDownload(url, httpClient)
+        downloader = Downloader(cbRegistry, executorService, speedtestLock).apply {
+            beginDownload(url, httpClient)
+        }
     }
 
     private fun getHostname(): Call? {
