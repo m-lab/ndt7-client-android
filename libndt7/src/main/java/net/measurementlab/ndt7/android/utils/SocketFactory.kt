@@ -1,7 +1,6 @@
 @file:JvmName("SocketFactory")
 package net.measurementlab.ndt7.android.utils
 
-import net.measurementlab.ndt7.android.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
