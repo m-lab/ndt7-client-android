@@ -28,7 +28,7 @@ class Uploader(
 
     private var startTime: Long = 0
     private var previous: Long = 0
-    private var totalBytesSent = 0.0
+    private var totalBytesSent: Long = 0
     private val gson = Gson()
 
     override fun onMessage(webSocket: WebSocket, text: String) {
@@ -95,7 +95,7 @@ class Uploader(
         tryToUpdateUpload(totalBytesSent, ws)
     }
 
-    private fun tryToUpdateUpload(total: Double, ws: WebSocket) {
+    private fun tryToUpdateUpload(total: Long, ws: WebSocket) {
         val now = currentTimeInMicroseconds()
 
         // if we haven't sent an update in 250ms, lets send one

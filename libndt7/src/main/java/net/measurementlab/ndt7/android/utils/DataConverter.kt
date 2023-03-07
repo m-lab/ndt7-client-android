@@ -7,7 +7,7 @@ import net.measurementlab.ndt7.android.models.ClientResponse
 
 object DataConverter {
 
-    @JvmStatic fun generateResponse(startTime: Long, numBytes: Double, testType: NDTTest.TestType): ClientResponse {
+    @JvmStatic fun generateResponse(startTime: Long, numBytes: Long, testType: NDTTest.TestType): ClientResponse {
         return ClientResponse(AppInfo(currentTimeInMicroseconds() - startTime, numBytes), test = testType.value)
     }
 

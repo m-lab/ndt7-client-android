@@ -10,5 +10,5 @@ data class ClientResponse(
 
 data class AppInfo(
     @SerializedName("ElapsedTime") val elapsedTime: Long,
-    @SerializedName("NumBytes") val numBytes: Double
+    @SerializedName("NumBytes") val numBytes: Long
 )
