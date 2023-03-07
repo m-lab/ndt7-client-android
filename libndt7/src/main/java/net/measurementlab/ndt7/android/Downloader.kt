@@ -25,7 +25,7 @@ class Downloader(
 
     private var startTime: Long = 0
     private var previous: Long = 0
-    private var numBytes = 0.0
+    private var numBytes: Long = 0
     private val gson = Gson()
     private var webSocket: WebSocket? = null
 
@@ -34,7 +34,7 @@ class Downloader(
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
-        numBytes += text.length.toDouble()
+        numBytes += text.length.toLong()
         tryToUpdateClient()
 
         try {
@@ -46,7 +46,7 @@ class Downloader(
     }
 
     override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-        numBytes += bytes.size.toDouble()
+        numBytes += bytes.size.toLong()
         tryToUpdateClient()
     }
 
